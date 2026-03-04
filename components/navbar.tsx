@@ -16,9 +16,23 @@ export default function Navbar() {
         <div className="flex h-14 items-center justify-between px-4">
 
           {/* logo */}
-          <Link href="/" className="text-lg font-semibold">
-            Taoshop
-          </Link>
+<Link
+  href="/"
+  className="flex items-center gap-2 font-semibold tracking-tight text-foreground"
+>
+  <svg
+    width="22"
+    height="18"
+    viewBox="0 0 76 65"
+    className="fill-current"
+  >
+    <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+  </svg>
+
+  <span className="text-sm sm:text-base">
+    TAOSHOP.PRO.VN
+  </span>
+</Link>
 
           {/* right side */}
           <div className="flex items-center gap-3">
