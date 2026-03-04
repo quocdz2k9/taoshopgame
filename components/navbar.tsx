@@ -1,45 +1,103 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import {
+  Menu,
+  X,
+  LogOut,
+  LayoutDashboard,
+  Loader2,
+  User
+} from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "./theme-toggle"
+import { toast } from "sonner"
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    checkAuth()
+  }, [])
+
+  async function checkAuth() {
+    try {
+      const res = await fetch("/api/me")
+
+      if (!res.ok) {
+        setUser(null)
+        return
+      }
+
+      const data = await res.json()
+      setUser(data)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function logout() {
+    await fetch("/api/logout", { method: "POST" })
+    toast.success("Đã đăng xuất")
+    window.location.href = "/login"
+  }
+
+  function shortEmail(email: string) {
+    if (email.length <= 18) return email
+    return email.slice(0, 10) + "..."
+  }
 
   return (
     <>
-      {/* ===== NAVBAR ===== */}
+      {/* ================= NAVBAR ================= */}
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
         <div className="flex h-14 items-center justify-between px-4">
 
-          {/* logo */}
-<Link
-  href="/"
-  className="flex items-center gap-2 font-semibold tracking-tight text-foreground"
->
-  <svg
-    width="22"
-    height="18"
-    viewBox="0 0 76 65"
-    className="fill-current"
-  >
-    <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-  </svg>
+          {/* ===== LOGO ===== */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-semibold tracking-tight text-foreground hover:opacity-80 transition"
+          >
+            <svg width="22" height="18" viewBox="0 0 76 65" className="fill-current">
+              <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+            </svg>
+            <span className="text-sm sm:text-base">TAOSHOP.PRO.VN</span>
+          </Link>
 
-  <span className="text-sm sm:text-base">
-    TAOSHOP.PRO.VN
-  </span>
-</Link>
+          {/* ===== RIGHT SIDE ===== */}
+          <div className="flex items-center gap-2">
 
-          {/* right side */}
-          <div className="flex items-center gap-3">
-            <Button className="rounded-xl">
-              Đăng nhập
-            </Button>
+            {loading && (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            )}
 
+            {/* ===== NOT LOGIN (Ask AI → Đăng nhập) ===== */}
+            {!loading && !user && (
+              <Link href="/login">
+                <Button className="rounded-xl">
+                  Đăng nhập
+                </Button>
+              </Link>
+            )}
+
+            {/* ===== LOGGED IN (show email like Vercel) ===== */}
+            {!loading && user && (
+              <Link href="/dashboard">
+                <Button
+                  variant="outline"
+                  className="rounded-xl max-w-[140px] truncate"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  {shortEmail(user.email)}
+                </Button>
+              </Link>
+            )}
+
+            {/* MENU BUTTON */}
             <Button
               variant="outline"
               size="icon"
@@ -51,9 +109,9 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* ===== FULLSCREEN MENU ===== */}
+      {/* ================= FULLSCREEN MENU ================= */}
       {open && (
-        <div className="fixed inset-0 z-[100] bg-background">
+        <div className="fixed inset-0 bg-background z-[100]">
 
           {/* header */}
           <div className="flex items-center justify-between h-14 px-4 border-b">
@@ -69,44 +127,74 @@ export default function Navbar() {
           </div>
 
           {/* content */}
-          <div className="p-6 space-y-6 text-base">
+          <div className="p-6 text-base">
 
-            <p className="text-muted-foreground">
-              khosharecodevn@gmail.com
-            </p>
+  {/* ===== USER INFO ===== */}
+  {user && (
+    <>
+      <p className="text-sm text-muted-foreground break-all mb-4">
+        {user.email}
+      </p>
+      <div className="border-t mb-5" />
+    </>
+  )}
 
-            <hr />
+  {/* ===== MAIN ACTIONS ===== */}
+  <div className="space-y-3">
 
-            <div className="space-y-3">
-              <p>Dashboard</p>
-              <p>Account Settings</p>
-              <p>Create Team</p>
-            </div>
+    {!user ? (
+      <>
+        <Link href="/login" className="block">
+          <Button className="w-full h-11 rounded-xl">
+            Đăng nhập
+          </Button>
+        </Link>
 
-            <hr />
+        <Link href="/register" className="block">
+          <Button
+            variant="outline"
+            className="w-full h-11 rounded-xl"
+          >
+            Đăng ký
+          </Button>
+        </Link>
+      </>
+    ) : (
+      <>
+        <Link href="/dashboard" className="block">
+          <Button
+            variant="outline"
+            className="w-full h-11 rounded-xl"
+          >
+            <LayoutDashboard className="w-4 h-4 mr-2" />
+            Dashboard
+          </Button>
+        </Link>
 
-            <div className="space-y-3">
-              <p>Products</p>
-              <p>Resources</p>
-              <p>Solutions</p>
-              <p>Pricing</p>
-            </div>
+        <Button
+          variant="destructive"
+          className="w-full h-11 rounded-xl"
+          onClick={logout}
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Đăng xuất
+        </Button>
+      </>
+    )}
+  </div>
 
-            <hr />
+  {/* ===== DIVIDER ===== */}
+  <div className="border-t my-6" />
 
-            <div className="flex items-center justify-between">
-              <span>Theme</span>
-              <ThemeToggle />
-            </div>
+  {/* ===== THEME ===== */}
+  <div className="flex items-center justify-between py-2">
+    <span className="text-sm font-medium">
+      Giao diện
+    </span>
+    <ThemeToggle />
+  </div>
 
-            <Button
-              variant="destructive"
-              className="w-full rounded-xl"
-            >
-              Log Out
-            </Button>
-
-          </div>
+</div>
         </div>
       )}
     </>
