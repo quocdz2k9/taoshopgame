@@ -2,39 +2,34 @@
 
 import { useTheme } from "next-themes"
 import { Sun, Moon, Laptop } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
+
+  const Item = ({
+    value,
+    icon: Icon,
+  }: {
+    value: string
+    icon: any
+  }) => (
+    <button
+      onClick={() => setTheme(value)}
+      className={cn(
+        "p-2 rounded-lg transition",
+        theme === value && "bg-muted"
+      )}
+    >
+      <Icon className="h-4 w-4" />
+    </button>
+  )
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-5 w-5 dark:hidden" />
-          <Moon className="hidden h-5 w-5 dark:block" />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          <Sun className="mr-2 h-4 w-4" /> Light
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          <Moon className="mr-2 h-4 w-4" /> Dark
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          <Laptop className="mr-2 h-4 w-4" /> System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-1 rounded-xl border bg-background p-1">
+      <Item value="system" icon={Laptop} />
+      <Item value="light" icon={Sun} />
+      <Item value="dark" icon={Moon} />
+    </div>
   )
 }

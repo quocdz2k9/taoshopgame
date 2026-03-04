@@ -1,85 +1,100 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
-import { Menu } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "./theme-toggle"
 
 export default function Navbar() {
+  const [open, setOpen] = useState(false)
+
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/70 backdrop-blur">
-      <div className="container mx-auto flex h-14 items-center justify-between px-4">
+    <>
+      {/* ===== NAVBAR ===== */}
+      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
+        <div className="flex h-14 items-center justify-between px-4">
 
-        {/* Logo */}
-        <Link href="/" className="font-bold text-lg tracking-tight">
-          Taoshop
-        </Link>
+          {/* logo */}
+          <Link href="/" className="text-lg font-semibold">
+            Taoshop
+          </Link>
 
-        {/* Desktop menu */}
-        <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost">Docs</Button>
-          <Button variant="ghost">Pricing</Button>
-          <Button>Login</Button>
-          <ThemeToggle />
-        </div>
+          {/* right side */}
+          <div className="flex items-center gap-3">
+            <Button className="rounded-xl">
+              Đăng nhập
+            </Button>
 
-        {/* Mobile menu */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="md:hidden">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setOpen(true)}
+            >
               <Menu className="h-5 w-5" />
             </Button>
-          </SheetTrigger>
+          </div>
+        </div>
+      </header>
 
-          <SheetContent side="top" className="pt-10">
+      {/* ===== FULLSCREEN MENU ===== */}
+      {open && (
+        <div className="fixed inset-0 z-[100] bg-background">
 
-            <div className="space-y-6">
+          {/* header */}
+          <div className="flex items-center justify-between h-14 px-4 border-b">
+            <span className="font-semibold">Menu</span>
 
-              {/* user */}
-              <div>
-                <p className="text-sm font-medium">khosharecodevn@gmail.com</p>
-              </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
 
-              <Separator />
+          {/* content */}
+          <div className="p-6 space-y-6 text-base">
 
-              {/* main */}
-              <div className="flex flex-col gap-2">
-                <Button variant="ghost" className="justify-start">Dashboard</Button>
-                <Button variant="ghost" className="justify-start">Account Settings</Button>
-                <Button variant="ghost" className="justify-start">Create Team</Button>
-              </div>
+            <p className="text-muted-foreground">
+              khosharecodevn@gmail.com
+            </p>
 
-              <Separator />
+            <hr />
 
-              {/* products */}
-              <div className="flex flex-col gap-2">
-                <Button variant="ghost" className="justify-start">Products</Button>
-                <Button variant="ghost" className="justify-start">Resources</Button>
-                <Button variant="ghost" className="justify-start">Solutions</Button>
-                <Button variant="ghost" className="justify-start">Pricing</Button>
-              </div>
-
-              <Separator />
-
-              {/* theme */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Theme</span>
-                <ThemeToggle />
-              </div>
-
-              <Separator />
-
-              <Button variant="destructive" className="w-full">
-                Log Out
-              </Button>
-
+            <div className="space-y-3">
+              <p>Dashboard</p>
+              <p>Account Settings</p>
+              <p>Create Team</p>
             </div>
 
-          </SheetContent>
-        </Sheet>
-      </div>
-    </header>
+            <hr />
+
+            <div className="space-y-3">
+              <p>Products</p>
+              <p>Resources</p>
+              <p>Solutions</p>
+              <p>Pricing</p>
+            </div>
+
+            <hr />
+
+            <div className="flex items-center justify-between">
+              <span>Theme</span>
+              <ThemeToggle />
+            </div>
+
+            <Button
+              variant="destructive"
+              className="w-full rounded-xl"
+            >
+              Log Out
+            </Button>
+
+          </div>
+        </div>
+      )}
+    </>
   )
 }
