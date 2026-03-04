@@ -30,7 +30,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider>{children}</TooltipProvider>
-          <Toaster richColors position="top" />
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>
